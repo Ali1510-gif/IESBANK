@@ -1,0 +1,119 @@
+#include <stdio.h>
+
+
+int main() {
+    printf("Welcome to the IES Bank!\n\n");
+
+    int pin = 1234, entered_pin, new_pin, choice;
+    int attempts = 0, max_attempts = 3;
+    float balance = 3000.0; // Initial balance
+    float deposit, withdraw;
+    float mini_statement[10] = {0}; // Store the last 10 transactions
+    int transaction_count = 0;      // Track the number of transactions
+    float withdraw_limit = 5000.0;  // Set maximum withdrawal limit per transaction
+
+    // Function to update mini-statement
+    void updateMiniStatement(float amount) {
+        if (transaction_count < 10) {
+            mini_statement[transaction_count] = amount;
+        } else {
+            // Shift all elements left if more than 10 transactions
+            for (int i = 1; i < 10; i++) {
+                mini_statement[i - 1] = mini_statement[i];
+            }
+            mini_statement[9] = amount;
+        }
+        transaction_count++;
+    }
+
+    // PIN Check with 3 Attempts
+    while (attempts < max_attempts) {
+        printf("Enter your PIN: ");
+        scanf("%d", &entered_pin);
+
+        if (entered_pin == pin) 
+        {
+            printf("Hello Ali!\n\n");
+            break;
+        } 
+        else 
+        {
+            attempts++;
+            printf("Re-Enter PIN. You have %d attempt(s) left.\n", max_attempts - attempts);
+        }
+
+        if (attempts == max_attempts) {
+            printf("Your Card has been block , Please contact at your branch !!\n");
+            return 0;
+        }
+    }
+
+    // ATM Menu
+    do {
+        printf("===== ATM Menu =======\n");
+        printf("1. Check Balance       2. Withdraw Money\n");
+        
+        printf("3. Change PIN          4. Mini-Statement\n ");
+       printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                // Check balance
+                printf("Your current balance is: %.2f\n", balance);
+                break;
+
+            case 2:
+                // Withdraw money
+                printf("Enter the amount to withdraw (limit 5000 per transaction): ");
+                scanf("%f", &withdraw);
+                
+                if (withdraw > withdraw_limit) {
+                    printf("Insufficient amount. You cannot withdraw more than 5000 in one transaction.\n");
+                } else if (withdraw > 0 && withdraw <= balance) {
+                    balance -= withdraw;
+                    printf("Withdrawal successful. You have withdrawn %.2f.\n", withdraw);
+                    printf("Remaining balance: %.2f\n", balance);
+                    updateMiniStatement(-withdraw); // Record withdrawal in mini-statement
+                } else if (withdraw > balance) {
+                    printf("Insufficient balance.\n");
+                } else {
+                    printf("Invalid withdrawal amount.\n");
+                }
+                break;
+
+            case 3:
+                // Change PIN
+                printf("Enter your old PIN: ");
+                scanf("%d", &pin);
+                printf("Enter your new PIN: ");
+                scanf("%d", &new_pin);
+                pin = new_pin;
+                printf("PIN changed successfully!\n");
+                break;
+
+            case 4:
+                // Mini-Statement
+                printf("Mini-Statement (Last 10 Transactions):\n");
+                for (int i = 0; i < 10; i++) {
+                    if (mini_statement[i] != 0) {
+                        printf("Transaction %d: %.2f\n", i + 1, mini_statement[i]);
+                    }
+                }
+                break;
+
+            case 5:
+                // Exit
+                printf("Thank you for using our ATM. Goodbye!\n");
+                break;
+
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+
+        printf("\n");
+    } while (choice != 5);
+
+    return 0;
+}
